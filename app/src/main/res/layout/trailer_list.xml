@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/play_button"
+        android:layout_weight="1"
+        android:adjustViewBounds="true"
+        android:maxWidth="@dimen/max"
+        android:maxHeight="@dimen/max"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name_of_trailer"
+        android:gravity="center"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_weight="2"/>
+
+</LinearLayout>

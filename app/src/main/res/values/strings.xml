@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="url_of_poster">http://image.tmdb.org/t/p/w185/</string>
+    <string name="check_network">Check Your Network</string>
+    <string name="must_popular">Most Popular</string>
+    <string name="highest_rate">Highest Rate</string>
+    <string name="reviews">Reviews</string>
+    <string name="youtube_url">https://www.youtube.com/watch?v=</string>
+    <string name="trailers">Trailers</string>
+    <string name="favored">Favored</string>
+    <string name="favorite">favorite</string>
+    <string name="deleteMovie">The Movie has been deleted</string>
+    <string name="insertMovie">Movie has been saved</string>
+</resources>
