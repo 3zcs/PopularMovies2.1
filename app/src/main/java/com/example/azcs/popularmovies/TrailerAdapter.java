@@ -21,10 +21,10 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerH
     private Context mContext ;
     private String url ;
 
-    public TrailerAdapter(List<Video> videoList, FragmentActivity activity) {
+    public TrailerAdapter(List<Video> videoList, Context context) {
         mVideoList = videoList ;
-        mContext = activity ;
-        if(mContext.getString(R.string.youtube_url)!= null)
+        mContext = context ;
+        if(mContext != null)
         url = mContext.getString(R.string.youtube_url);
 
     }

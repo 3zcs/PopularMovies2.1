@@ -32,29 +32,40 @@ import retrofit2.Response;
  * A simple {@link Fragment} subclass.
  */
 public class DetailsFragment extends Fragment {
-    @BindView(R.id.poster) ImageView mPoster ;
-    @BindView(R.id.date) TextView mDate ;
-    @BindView(R.id.rate) TextView mRate ;
-    @BindView(R.id.title) TextView mTitle ;
-    @BindView(R.id.plot) TextView mOverview ;
-    @BindView(R.id.recycler_trailer) RecyclerView mTrailers;
-    @BindView(R.id.recycler_review) RecyclerView mReviews ;
-    @BindView(R.id.favorite) Button favorite ;
-    @BindView(R.id.wait_review) ProgressBar mWaitReview ;
-    @BindView(R.id.wait_trailer) ProgressBar mWaitTrailer ;
+    @BindView(R.id.poster)
+    ImageView mPoster;
+    @BindView(R.id.date)
+    TextView mDate;
+    @BindView(R.id.rate)
+    TextView mRate;
+    @BindView(R.id.title)
+    TextView mTitle;
+    @BindView(R.id.plot)
+    TextView mOverview;
+    @BindView(R.id.recycler_trailer)
+    RecyclerView mTrailers;
+    @BindView(R.id.recycler_review)
+    RecyclerView mReviews;
+    @BindView(R.id.favorite)
+    Button favorite;
+    @BindView(R.id.wait_review)
+    ProgressBar mWaitReview;
+    @BindView(R.id.wait_trailer)
+    ProgressBar mWaitTrailer;
+    static View view ;
+    private Context mContext;
     private List<Review> mReviewList = new ArrayList<>();
-    private ReviewAdapter mRAdapter ;
-    private TrailerAdapter mDAdapter ;
-    private RecyclerView.LayoutManager mLayoutManager ,mRLayoutManager;
-    public static final String ARGS_POSITION = "POSITION" ;
+    private ReviewAdapter mRAdapter;
+    private TrailerAdapter mDAdapter;
+    private RecyclerView.LayoutManager mLayoutManager, mRLayoutManager;
+    public static final String ARGS_POSITION = "POSITION";
     private List<Video> mVideoList = new ArrayList<>();
     private Movie mMovie;
-    Movie.MovieDbHelper dbHelper = null ;
-    private static final String MOVIE= "MOVIE" , TRAILERS = "TRAILERS" ,REVIEWS= "REVIEWS";
+    Movie.MovieDbHelper dbHelper = null;
+    private static final String MOVIE = "MOVIE", TRAILERS = "TRAILERS", REVIEWS = "REVIEWS";
 
     public DetailsFragment() {
         // Required empty public constructor
-        setRetainInstance(true);
     }
 
     @Override
@@ -62,13 +73,13 @@ public class DetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             if (App.NetworkState(getActivity())) {
-                if (getArguments() != null){
+                if (getArguments() != null) {
                     mMovie = getArguments().getParcelable(ARGS_POSITION);
                 }
             } else {
                 App.msg(getActivity(), getString(R.string.check_network));
             }
-        }else {
+        } else {
             mVideoList = savedInstanceState.getParcelableArrayList(TRAILERS);
             mReviewList = savedInstanceState.getParcelableArrayList(REVIEWS);
             mMovie = savedInstanceState.getParcelable(MOVIE);
@@ -79,34 +90,33 @@ public class DetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         dbHelper = new Movie.MovieDbHelper(getActivity());
-        View view = inflater.inflate(R.layout.fragment_details, container, false);
-        ButterKnife.bind(this,view);
+        view = inflater.inflate(R.layout.fragment_details, container, false);
+        ButterKnife.bind(this, view);
         mTrailers.setVisibility(View.GONE);
         mReviews.setVisibility(View.GONE);
+
         if (mMovie != null) {
             makeView(mMovie);
-        }else {
-
         }
 
-        return view ;
+        return view;
     }
 
     //Land scape update
     public void updateMovie(Movie movie) {
         if (movie != null)
-        makeView(movie);
+            makeView(movie);
     }
 
-    public void makeView(final Movie movie){
-        mMovie = movie ;
+    public void makeView(Movie movie) {
+        mMovie = movie;
         MoviesAPI api = App.getClient().create(MoviesAPI.class);
-        Call<ListOfResult<Video>> videosCall = api.getVideo(movie.getId(),BuildConfig.API_KEY);
+        Call<ListOfResult<Video>> videosCall = api.getVideo(movie.getId(), BuildConfig.API_KEY);
         videosCall.enqueue(new Callback<ListOfResult<Video>>() {
             @Override
             public void onResponse(Call<ListOfResult<Video>> call, Response<ListOfResult<Video>> response) {
                 mVideoList = response.body().getList();
-                mDAdapter = new TrailerAdapter(mVideoList , getActivity());
+                mDAdapter = new TrailerAdapter(mVideoList, getActivity());
                 mTrailers.setAdapter(mDAdapter);
                 mDAdapter.notifyDataSetChanged();
             }
@@ -116,12 +126,12 @@ public class DetailsFragment extends Fragment {
 
             }
         });
-        Call<ListOfResult<Review>>reviewsCall = api.getReviews(movie.getId() , BuildConfig.API_KEY);
+        Call<ListOfResult<Review>> reviewsCall = api.getReviews(movie.getId(), BuildConfig.API_KEY);
         reviewsCall.enqueue(new Callback<ListOfResult<Review>>() {
             @Override
             public void onResponse(Call<ListOfResult<Review>> call, Response<ListOfResult<Review>> response) {
                 mReviewList = response.body().getList();
-                mRAdapter = new ReviewAdapter(mReviewList , getActivity());
+                mRAdapter = new ReviewAdapter(mReviewList, getActivity());
                 mReviews.setAdapter(mRAdapter);
                 mWaitReview.setVisibility(View.GONE);
                 mWaitTrailer.setVisibility(View.GONE);
@@ -136,13 +146,13 @@ public class DetailsFragment extends Fragment {
             }
         });
         //trailer
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mDAdapter = new TrailerAdapter(mVideoList, getActivity());
+        mLayoutManager = new LinearLayoutManager(mContext);
+        mDAdapter = new TrailerAdapter(mVideoList, mContext);
         mTrailers.setLayoutManager(mLayoutManager);
         mTrailers.setAdapter(mDAdapter);
         //review
-        mRAdapter = new ReviewAdapter(mReviewList , getActivity());
-        mRLayoutManager = new LinearLayoutManager(getActivity());
+        mRAdapter = new ReviewAdapter(mReviewList, mContext);
+        mRLayoutManager = new LinearLayoutManager(mContext);
         mReviews.setLayoutManager(mRLayoutManager);
         mReviews.setAdapter(mRAdapter);
 
@@ -151,43 +161,44 @@ public class DetailsFragment extends Fragment {
         mOverview.setText(mMovie.getOverview());
         mTitle.setText(mMovie.getTitle());
         Picasso.with(getActivity())
-                .load(getString(R.string.url_of_poster)+ mMovie.getPosterPath())
+                .load(getString(R.string.url_of_poster) + mMovie.getPosterPath())
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error)
                 .into(mPoster);
 
-        if (dbHelper.movieWasFavorit(mMovie.getId())){
+        if (dbHelper.movieWasFavorit(mMovie.getId())) {
             favorite.setText(getString(R.string.favored));
         }
 
         favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (dbHelper.movieWasFavorit(mMovie.getId())){
+                if (dbHelper.movieWasFavorit(mMovie.getId())) {
                     dbHelper.reomveData(mMovie.getId());
-                    App.msg(getActivity() , getString(R.string.deleteMovie));
+                    App.msg(getActivity(), getString(R.string.deleteMovie));
                     favorite.setText(getString(R.string.favorite));
-                }else {
+                } else {
                     dbHelper.insertData(mMovie);
-                    App.msg(getActivity() , getString(R.string.insertMovie));
+                    App.msg(getActivity(), getString(R.string.insertMovie));
                     favorite.setText(getString(R.string.favored));
                 }
-        }
+            }
 
-    });
+        });
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mContext = context;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(MOVIE , mMovie);
-        outState.putParcelableArrayList(TRAILERS , (ArrayList)mVideoList);
-        outState.putParcelableArrayList(REVIEWS , (ArrayList) mReviewList);
+        outState.putParcelable(MOVIE, mMovie);
+        outState.putParcelableArrayList(TRAILERS, (ArrayList) mVideoList);
+        outState.putParcelableArrayList(REVIEWS, (ArrayList) mReviewList);
 
     }
 }

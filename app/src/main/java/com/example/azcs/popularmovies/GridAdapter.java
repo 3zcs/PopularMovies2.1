@@ -27,6 +27,7 @@ public class GridAdapter extends BaseAdapter {
     GridAdapter(Context c , List<String> url){
         context = c ;
         this.url = url;
+        Log.v("adapter" , String.valueOf(url.size()));
     }
 
     public int getCount() {

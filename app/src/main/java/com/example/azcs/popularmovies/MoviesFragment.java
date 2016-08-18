@@ -32,8 +32,8 @@ public class MoviesFragment extends Fragment {
     @BindView(R.id.gridview) GridView mGridView ;
     @BindView(R.id.txt_network) TextView mNetwork ;
     @BindView(R.id.wait_progress) ProgressBar mWaitProgress ;
-    List<Movie> movies = new ArrayList<>();
-    List<String> url = new ArrayList<>();
+    static List<Movie> movies = new ArrayList<>();
+    static List<String> url = new ArrayList<>();
     GridAdapter adapter;
     public final String popular = "popular"
             , topRated = "top_rated" ;
@@ -41,7 +41,6 @@ public class MoviesFragment extends Fragment {
     OnMovieSelectedListener mCallBack ;
     Movie.MovieDbHelper dbHelper = null ;
     public MoviesFragment(){
-        setRetainInstance(true);
     }
 
     @Override
@@ -71,6 +70,10 @@ public class MoviesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            movies = (ArrayList<Movie>) savedInstanceState.get(STATE);
+            makeGrid(movies);
+        }
         setHasOptionsMenu(true);
     }
 
@@ -81,30 +84,24 @@ public class MoviesFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
         ButterKnife.bind(this,view);
-
-        if (App.NetworkState(getActivity()) == false) {
-            mNetwork.setText(getString(R.string.check_network));
-            mGridView.setVisibility(View.GONE);
-        }else {
             if (savedInstanceState != null) {
                 movies = (ArrayList<Movie>) savedInstanceState.get(STATE);
-                url.clear();
-                int i = 0;
-                while (i < movies.size()) {
-                    url.add(getString(R.string.url_of_poster) + movies.get(i).getPosterPath());
-                    i++;
-                }
-                mWaitProgress.setVisibility(View.GONE);
-                mGridView.setVisibility(View.VISIBLE);
+                makeGrid(movies);
             }else {
+                if (App.NetworkState(getActivity()) == false) {
+                    mNetwork.setText(getString(R.string.check_network));
+                    mGridView.setVisibility(View.GONE);
+                    mWaitProgress.setVisibility(View.GONE);
+                }
                 makeGrid(popular);
             }
-        }
+
         adapter = new GridAdapter(getActivity(),url);
         mGridView.setAdapter(adapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -112,7 +109,6 @@ public class MoviesFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //pass data
                 //save move number "position"
-
                 mCallBack.onMoveSelected(movies.get(position));
             }
         });
@@ -183,5 +179,19 @@ public class MoviesFragment extends Fragment {
             }
         });
     }
+
+    public void makeGrid (List<Movie> movieList){
+        url.clear();
+        int i = 0;
+        while (i < movies.size()) {
+            url.add(getString(R.string.url_of_poster) + movieList.get(i).getPosterPath());
+            i++;
+        }
+        //adapter.notifyDataSetChanged();
+        App.msg(getActivity() , String.valueOf(url.size()));
+        //mWaitProgress.setVisibility(View.GONE);
+        //mGridView.setVisibility(View.VISIBLE);
+    }
+
 }
 
